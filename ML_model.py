@@ -3,6 +3,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from pymongo import MongoClient
 import os
+from dotenv import load_dotenv
+load_dotenv()  # This loads environment variables from .env file
 
 # Establish connection to MongoDB
 mongo_uri = os.getenv("MONGO_URI")

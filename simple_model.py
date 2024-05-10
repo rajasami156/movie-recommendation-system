@@ -1,6 +1,8 @@
 import pandas as pd
 from pymongo import MongoClient
 import os
+from dotenv import load_dotenv
+load_dotenv()  # This loads environment variables from .env file
 
 # Function for weighted rating calculation
 def weighted_rating(x, m, c):
