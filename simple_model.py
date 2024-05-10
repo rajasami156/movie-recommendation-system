@@ -1,6 +1,6 @@
-# movie_recommendation_logic.py
-
 import pandas as pd
+from pymongo import MongoClient
+import os
 
 # Function for weighted rating calculation
 def weighted_rating(x, m, c):
@@ -8,15 +8,34 @@ def weighted_rating(x, m, c):
     r = x['vote_average']
     return (v / (v + m) * r) + (m / (m + v) * c)
 
-
-# Load movie dataset function
+# Load movie dataset function from MongoDB
 def load_movies():
     try:
-        movies = pd.read_csv('new_dataset.csv')
+        # Establish connection to MongoDB
+        mongo_uri = os.getenv("MONGO_URI")
+        client = MongoClient(mongo_uri)
+        database = client.Movie_Recommendation
+        collection = database.CSVData
+
+        # Fetch data from MongoDB and convert to DataFrame
+        data = list(collection.find({}))
+        if not data:
+            raise ValueError("No data found in the MongoDB collection")
+
+        movies = pd.DataFrame(data)
+        movies.drop(columns=['_id'], inplace=True)  # Remove MongoDB's auto-generated ID
+        
+        # Close the MongoDB connection after fetching data
+        client.close()
+
+        # Process genres column into lists
+        if 'genres' not in movies.columns:
+            raise ValueError("Expected 'genres' field is missing from the MongoDB collection")
+
         movies['genre_names'] = movies['genres'].str.split(", ")
         return movies
     except Exception as e:
-        print(f"Error loading dataset: {e}")
+        print(f"Error loading dataset from MongoDB: {e}")
         return pd.DataFrame()
 
 # Function to get recommendations based on genres

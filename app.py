@@ -31,6 +31,6 @@ def recommend_genres():
         print(f'Error in API endpoint: {e}')
         return jsonify([]), 500
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     app.run(debug=True)
